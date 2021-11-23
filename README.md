@@ -10,9 +10,15 @@ Will add credits and stuff later, definitely pulled some really cool stuff that 
 ---------Geospatial Data---------
 
 Order is:
-1)pakages 
-2)cleaning 
-3)overal look at seattle 
-4)different types(groups) of crime 
-5)sizes of maps
-6)some basic k-cuslter stuff that is bad, but looks kinda cool
+  1)pakages 
+  2)cleaning 
+  3)overal look at seattle 
+  4)different types(groups) of crime 
+  5)sizes of maps
+  6)some basic k-cuslter stuff that is bad, but looks kinda cool
+
+
+Credits:
+Ilyas Ustun (I belive) for the geospatial backbone of this 
+https://www.r-bloggers.com/2016/09/san-francisco-crime-data-analysis-part-2/
+
