@@ -25,6 +25,7 @@ df <- read.socrata(
 ###########################################
 #### Good old data  cleaning and setup ####
 
+
 glimpse(df)
 df <- na.omit(df)
 df$longitude <- as.numeric(df$longitude)
@@ -38,48 +39,52 @@ df2020 <- filter(df, offense_start_datetime >= ("2020-01-01"), offense_start_dat
 df2021<- filter(df, offense_start_datetime >= ("2021-01-01"))
 rm(df)
 
+#that does not feel like alot of cleaning...
+#I removed the original df, just because it is so so large
 
 
 glimpse(df2021)
-#Just noticed crime_against_category["SOCIETY"] wow hum wonder what that was (Will come back to this later )
+#crime_against_category("SOCIETY") is an intresting one
 
 
 ggplot() +
   geom_point(data=df2021, aes(x=longitude, y=latitude))
 
 
-#shit that worked fuck yeah,  but this is San Fran, Not important for this
-#sf = get_stamenmap(bbox = c(left = -122.5164, bottom = 37.7066, right = -122.3554, top = 37.8103), maptype = c("toner-lite"), zoom = 13)
-#ggmap(sf)
-
-#using stamenmap, here is a link on how to use it and common issues that might come up
+#using stamenmap to get my map, here is a link on how to use it and common issues that might come up
 #https://rdrr.io/cran/ggmap/man/get_stamenmap.html
 
 #Seattle, feel free to adjust the size of the map, I just kinda winged it, probably forgot some places
-sea_test = get_stamenmap(bbox = c(left = -122.45, bottom = 47.55, right = -122.25, top = 47.7), maptype = c("toner-lite"), zoom = 13)
-ggmap(sea_test)
-map <- ggmap(sea_test)
+sea_fullish = get_stamenmap(bbox = c(left = -122.45, bottom = 47.55, right = -122.25, top = 47.7), maptype = c("toner-lite"), zoom = 13)
+ggmap(sea_fullish)
+map <- ggmap(sea_fullish)
+map + 
+  ggtitle("Seattle, toner-lite") +
+  theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0)) 
 
 #oh fuck yeah it is on the map
 map +
   geom_point(data=df2021, aes(x=longitude, y=latitude))
 
-#################################
-#Maps n' shit
-#first is pretty normal, with semi-translutant dots
-#two is a heat map that might be cool in some places but is hard to read with this data
+
+######################
+#### Maps n' shit ####
+#first is pretty normal, with semi-translucent dots
 #three is a heat map, which is super cool actually
-#################################
 
-#oh fuck yeah again, that looks even better
+#This first one is pretty cool, uses semi-translucent dots
 map + 
-geom_point(data=df2021, aes(x=longitude, y=latitude), color="dark green", alpha=.03, size=1.1)
+  geom_point(data=df2021, aes(x=longitude, y=latitude), color="dark green", alpha=.03, size=1.1) +
+  ggtitle("Scatter Map, Seattle") +
+  theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0)) 
+#seems to be more around major roads/highways 
 
-#################################
-#  tile border mapped to density
-#thanks to the person who wrote this code out
-# ah this is not all that readable
-#################################
+
+
+
+# This second one is super cool, I did not write this and I am not sure it is the most helpful right now
+#but very cool
+
 map +
   stat_density2d(data=df2021_ARSON, aes(x=longitude
                                             , y=latitude
@@ -97,17 +102,27 @@ map +
 
 
 
-#########################################
-##### annnnd here is the heat map #######
+# the third map is a heat map, and its very cool 
+#not perfect though, not sure that lake union is a crime hotspot.... maybe that pirate ship in lake union is actually a priate ship and not a party boat...
 
 map + 
-  stat_density2d( data = df2021, aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..), size = 1, bins = 30, geom = 'polygon') +
+  stat_density2d( data = df2021, aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..), size = 1, bins = 12, geom = 'polygon') +
   scale_fill_gradient('Crime\nDensity', low = 'blue', high = 'orange') +
-  scale_alpha(range = c(.2, .3), guide = "none") +
-  guides(fill = guide_colorbar(barwidth = 1.5, barheight = 10)) 
+  scale_alpha(range = c(.1, .3), guide = "none") +
+  ggtitle("Heat Map, Full") +
+  theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0)) 
 
+#This one has much more blow up colors
+# map + 
+#   stat_density2d( data = df2021, aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..), size = 1, bins = 30, geom = 'polygon') +
+#   scale_fill_gradient('Crime\nDensity', low = 'blue', high = 'orange') +
+#   scale_alpha(range = c(.2, .3), guide = "none") +
+#   guides(fill = guide_colorbar(barwidth = 1.5, barheight = 10)) +
+#   ggtitle("Heat Map 2021, Seattle") +
+#   theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0)) 
+# 
 
-#If you wanted a topagrpahical look at all
+#If you wanted a topographical look at all
 #map + stat_density2d( data = df2021, aes(x = longitude, y = latitude), size = 1, bins = 15) 
 
 
@@ -150,24 +165,46 @@ df2021_WEAPON_LAW_VIOLATIONS<- filter(df2021, offense_parent_group == "WEAPON LA
 #but for smaller classes just the plotted map might be better
 
 #6118 ops - BURGLARY_BREAKING_ENTERING
+
 map + 
-  stat_density2d( data = df2021_BURGLARY_BREAKING_ENTERING, aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..), size = 1, bins = 50, geom = 'polygon') +
+  stat_density2d( data = df2021_BURGLARY_BREAKING_ENTERING, aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..), size = 1, bins = 12, geom = 'polygon') +
   scale_fill_gradient('Crime\nDensity', low = 'blue', high = 'orange') +
-  scale_alpha(range = c(.2, .3), guide = "none") +
-  guides(fill = guide_colorbar(barwidth = 1.5, barheight = 10)) 
+  scale_alpha(range = c(.1, .3), guide = "none") +
+  ggtitle("Heat Map, BURGLARY_BREAKING_ENTERING") +
+  theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0))
+#interesting that the "hotspot" has moved out of the city center
+#wonder if I could so a side by side
+
+#Going to add a few here that are intresting
+map + 
+  stat_density2d( data = df2021_MOTOR_VEHICLE_THEFT, aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..), size = 1, bins = 12, geom = 'polygon') +
+  scale_fill_gradient('Crime\nDensity', low = 'blue', high = 'orange') +
+  scale_alpha(range = c(.1, .3), guide = "none") +
+  ggtitle("Heat Map, MOTOR_VEHICLE_THEFT") +
+  theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0))
+
+map + 
+  stat_density2d( data = df2021_ASSAULT_OFFENSES, aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..), size = 1, bins = 12, geom = 'polygon') +
+  scale_fill_gradient('Crime\nDensity', low = 'blue', high = 'orange') +
+  scale_alpha(range = c(.1, .3), guide = "none") +
+  ggtitle("Heat Map, ASSAULT_OFFENSES") +
+  theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0))
+
 
 #318 ops - DRIVING_UNDER_THE_INFLUENCE
 map +
   geom_point(data=df2021_DRIVING_UNDER_THE_INFLUENCE, aes(x=longitude, y=latitude))
 
-#These might not have been as useful as I thought
-glimpse(df2021_MOTOR_VEHICLE_THEFT)
+#maybe do some cluster analysis on this one, find out where the groups are
+#eh I do it below, I am not good with cuslters. So spoiler alert, its not that good
 
 
-#colorcoatingmy diffence offence groups 
+
+#color coating different offence groups 
 map + 
   geom_point(data=df2021_FRAUD_OFFENSES, aes(x=longitude, y=latitude, color=offense, shape=offense_parent_group))
 #hum, might need to zoom in
+#annnnd missing some classes
 
 
 ##### Zoomed in Maps #####
@@ -177,8 +214,8 @@ sea_vp = get_stamenmap(bbox = c(left = -122.335, bottom = 47.625, right = -122.3
 ggmap(sea_vp)
 map_zoom_volunteer_park <- ggmap(sea_vp)
 
-#Downtown, close to where I work (I want to try 18)
-sea_downtown = get_stamenmap(bbox = c(left = -122.340, bottom = 47.607, right = -122.3325, top = 47.6115), maptype = c("toner-lite"), zoom = 17)
+#Downtown, businessy part of town (I want to try 18)
+sea_downtown = get_stamenmap(bbox = c(left = -122.340, bottom = 47.607, right = -122.3325, top = 47.6115), maptype = c("toner-lite"), zoom = 18)
 ggmap(sea_downtown)
 map_zoom_downtown <- ggmap(sea_downtown)
 
@@ -208,32 +245,46 @@ counts_offense_pg <- count(df2021,offense_group_small)
 print(counts_offense_pg)
 #lets try this again
 
-#cool, unforunally "Other" so might need to group one more into that
+#cool, unfortunately shaooe for "Other" so might need to group one more into that
 map_zoom_volunteer_park +
-  geom_point(data=df2021, aes(x=longitude, y=latitude, color=offense_group_small, shape=offense_group_small, size = 1.1))
+  geom_point(data=df2021, aes(x=longitude, y=latitude, color=offense_group_small, shape=offense_group_small, size = 1.1)) +
+  ggtitle("Offense Type, Vollenteer Park") +
+  theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0)) 
 
 map_zoom_downtown +
   geom_point(data=df2021, aes(x=longitude, y=latitude, color=offense_group_small, shape=offense_group_small, size=1.8))
 #well cool, that worked as well as I could have hoped for
 
-#would be intresting to use a heat map on the zoomed in data
+#would be interesting to use a heat map on the zoomed in data
 #that might be better to add after I clean all this code up
 
-#and yes, I know this heat thing plays werid with water 
+#and yes, I know this heat thing plays weird with water/areas that are not smooth
 map_zoom_volunteer_park + 
-  stat_density2d( data = df2021, aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..), size = 1, bins = 12, geom = 'polygon') +
+  stat_density2d( data = df2021, aes(x = longitude, y = latitude, fill = ..level.., alpha = ..level..), size = 1, bins =12, geom = 'polygon') +
   scale_fill_gradient('Crime\nDensity', low = 'blue', high = 'orange') +
-  scale_alpha(range = c(.1, .3), guide = "none") 
+  scale_alpha(range = c(.1, .3), guide = "none") +
+  ggtitle("Heat Map, Volunteer Park") +
+  theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0)) 
+
+# This is the "bare bones one, which might be harder to read quickly but might be more accurate
+# map_zoom_volunteer_park + 
+#   stat_density2d( data = df2021, aes(x = longitude, y = latitude), size = 1, bins = 15) +
+#   ggtitle("Line Density Map, Downtown") +
+#   theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0)) 
+
 
 #oh I actually really like this map.....
-map_zoom_downtown + stat_density2d( data = df2021, aes(x = longitude, y = latitude), size = 1, bins = 15) 
+map_zoom_downtown + 
+  stat_density2d( data = df2021, aes(x = longitude, y = latitude), size = 1, bins = 15) +
+ggtitle("Line Density Map, Downtown") +
+  theme(plot.title = element_text(family="Helvetica", size=18, face="bold", hjust=0)) 
 
 ############################################
 #### Lets try some shit with clustering ####
-#this sorta works with arson... but might be more intresting to have other 
+#this sorta works with arson... not really sure how well it works for other classes
 
 
-df2021_K_cuslter = data.frame(df2021_COUNTERFEITING_FORGERY$latitude, df2021_COUNTERFEITING_FORGERY$longitude)
+df2021_K_cuslter = data.frame(df2021_ARSON$latitude, df2021_ARSON$longitude)
 TheVariance=apply(df2021_K_cuslter,2,var)
 WithinClusterSumOfSquares = (nrow(df2021_K_cuslter)-1)*sum(TheVariance)
 for (i in 2:15) {
@@ -241,10 +292,10 @@ for (i in 2:15) {
   WithinClusterSumOfSquares[i] = sum(ClusterInfo$withinss)
 }
  plot(1:15, WithinClusterSumOfSquares, type="b", xlab="Number of Clusters",ylab="Within groups sum of squares") 
-#looks like 5 or 6 for this one
+#looks like 5 or 6 for this one.... but I am going to go with 12....
  
 
- k = kmeans(df2021_K_cuslter, 5) 
+ k = kmeans(df2021_K_cuslter, 12) 
  k$centers
  table(k$cluster)
 k$cluster
@@ -253,13 +304,13 @@ plot(k$cluster)
   glimpse(ClusterInfo)
  
  
- ###oh shit that kinda worked, not the most useful for large classes (as you can see below)
-#point size can be funny on this one as well
+#oh shit that kinda worked
 map +
-   geom_point(data=df2021_K_cuslter, aes(x=df2021_COUNTERFEITING_FORGERY$longitude, y=df2021_COUNTERFEITING_FORGERY$latitude, color = k$cluster)) 
+   geom_point(data=df2021_K_cuslter, aes(x=df2021_ARSON$longitude, y=df2021_ARSON$latitude, color = k$cluster)) 
+#I kinda like sending it on a ton of clusters... lets you isolate the two arsons in greenwood and west seattle from the rest
+#but not really sure what to do with this inforamtion
 
-
-#all data now
+#all data now, this is fun... but not useful haha
 
 
 df2021_K_cuslter_2 = data.frame(df2021$latitude, df2021$longitude)
@@ -270,10 +321,10 @@ for (i in 2:15) {
   WithinClusterSumOfSquares[i] = sum(ClusterInfo$withinss)
 }
 plot(1:15, WithinClusterSumOfSquares, type="b", xlab="Number of Clusters",ylab="Within groups sum of squares") 
-#looks like 5 or 6 for this one
+#looks like 5 or 6 for this one.... but I am going to try 15 
 
 
-k = kmeans(df2021_K_cuslter_2, 5) 
+k = kmeans(df2021_K_cuslter_2, 15) 
 k$centers
 table(k$cluster)
 k$cluster
@@ -286,20 +337,21 @@ glimpse(ClusterInfo)
 map +
   geom_point(data=df2021_K_cuslter_2, aes(x=df2021.longitude, y=df2021.latitude, color = k$cluster, alpha=.02)) 
 
-#lol, well its not helpful but it is cool
-
+#kinda cool to see crime broken up into districts based on natural barriers (freeways, highways, waterway, etc.)
+#but kinda hard to tell the differences here between colors 
 
 ##########################################
-######### Takeaways/Value ################
+######### Final Takeaways ################
 
-#Welp, I would say that there are two real takeaways here
-#First would be if you are figuring out where you might want to live/commute
-#Secound might be things like arson are more likely downtown and robbery in the burbs
-#Other than that, main takeaways are really from the sum stats
+#Before I start I should mention that none of this is close to scientific, just a fun thing I did.
+#This is not really meant to be some extensive crime analysis.
+
+#First takeaway, would be that most crime is downtown. It really depends on the kinds of crime.
+#Second might be that more crime seems to take place around major roads/highways
+#I really need a pop density map to do crimes/capita in different parts of town
 #It might be good to go into how time affects crimes, or using lat/long to filter crimes (so you are only looking at crimes in your local area)
 
-#But this is not really ment to be some extensive crime analysis. I am just trying to make some cool geospatial charts in r
-#To get some really good info, you might need to dig in alot more to something like arson or a particualr crime. See if there is some pattern there.
+#To get some really good info, you might need to dig in alot more to something like arson or a particular crime. See if there is some pattern there.
 
 #I do plan on working with some time series stuff, that might be kinda cool
 
