@@ -1,7 +1,8 @@
 # SeattleCrime
 Looking at Seattle crime, geospatial analysis at first. Hopefully get to some time series stuff later 
 
-Using an API to pull data from seattle crime data (https://data.seattle.gov/Public-Safety/SPD-Crime-Data-2008-Present/tazs-3rd5)
+Using an API to pull data from seattle crime data:  
+https://data.seattle.gov/Public-Safety/SPD-Crime-Data-2008-Present/tazs-3rd5
 
 None of the code/analysis is all that good haha, just doing it for fun.
 
