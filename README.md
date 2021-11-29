@@ -6,9 +6,11 @@ Using an API to pull data from seattle crime data (https://data.seattle.gov/Publ
 None of the code/analysis is all that good haha, just doing it for fun.
 
 Geospatial stuff is done for now
+
 ---------Geospatial Data---------
 
 Order is:
+
   1)cleaning/setup
   2)overal look at seattle 
   3)different types(groups) of crime 
