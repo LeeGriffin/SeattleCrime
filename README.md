@@ -3,22 +3,20 @@ Looking at Seattle crime, geospatial analysis at first. Hopefully get to some ti
 
 Using an API to pull data from seattle crime data (https://data.seattle.gov/Public-Safety/SPD-Crime-Data-2008-Present/tazs-3rd5)
 
-None of it is all that good haha, never really done geospatial stuff before. 
+None of the code/analysis is all that good haha, just doing it for fun.
 
-Will add credits and stuff later, definitely pulled some really cool stuff that other people did
-
+Geospatial stuff is done for now
 ---------Geospatial Data---------
 
 Order is:
-  1)pakages 
-  2)cleaning 
-  3)overal look at seattle 
-  4)different types(groups) of crime 
-  5)sizes of maps
-  6)some basic k-cuslter stuff that is bad, but looks kinda cool
+  1)cleaning/setup
+  2)overal look at seattle 
+  3)different types(groups) of crime 
+  4)sizes of maps
+  5)some basic k-cuslter stuff that is bad, but looks kinda cool/intresting
 
 
-Credits:
+Credits: definitely pulled some really cool stuff that other people did
 
 Ilyas Ustun (I belive) for the geospatial backbone of this (One of the few links I used)
 https://www.r-bloggers.com/2016/09/san-francisco-crime-data-analysis-part-2/
